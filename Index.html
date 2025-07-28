@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบอบรมออนไลน์</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts for better typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Sarabun', sans-serif;
+            background-color: #0a192f; /* Dark blue background */
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            overflow-x: hidden; /* Prevent horizontal scroll */
+        }
+        .hidden { display: none; }
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 */
+            height: 0;
+            overflow: hidden;
+            max-width: 100%;
+            background: #000;
+        }
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        .modal { background-color: rgba(0, 0, 0, 0.7); }
+        .content-card {
+            background-color: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+        .ripple {
+            position: fixed;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.6);
+            transform: scale(0);
+            animation: ripple-effect 0.6s linear;
+            pointer-events: none;
+        }
+        @keyframes ripple-effect {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <div class="container mx-auto p-4 md:p-8 max-w-4xl">
+        <header class="text-center mb-8 bg-black/30 p-4 rounded-xl">
+            <h1 class="text-3xl md:text-4xl font-bold text-white">ระบบอบรมออนไลน์</h1>
+            <p class="text-gray-200 mt-2">กรุณากรอกข้อมูลและทำแบบทดสอบให้ครบถ้วน</p>
+        </header>
+
+        <!-- Page 1: Registration Form -->
+        <div id="page-register">
+            <div class="content-card p-8 rounded-xl shadow-2xl">
+                <h2 class="text-2xl font-bold mb-6 text-center">ลงทะเบียนเข้ารับการอบรม</h2>
+                <form id="register-form">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="firstName" class="block text-sm font-medium text-gray-700">ชื่อ</label>
+                            <input type="text" id="firstName" name="firstName" required class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                        <div>
+                            <label for="lastName" class="block text-sm font-medium text-gray-700">นามสกุล</label>
+                            <input type="text" id="lastName" name="lastName" required class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                        <div>
+                            <label for="employeeId" class="block text-sm font-medium text-gray-700">รหัสพนักงาน</label>
+                            <input type="text" id="employeeId" name="employeeId" required class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                        <div>
+                            <label for="position" class="block text-sm font-medium text-gray-700">ตำแหน่ง</label>
+                            <input type="text" id="position" name="position" required class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                        <div class="md:col-span-2">
+                            <label for="department" class="block text-sm font-medium text-gray-700">แผนก</label>
+                            <select id="department" name="department" required class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                <option value="" disabled selected>กรุณาเลือกแผนก</option>
+                                <option value="Operation">Operation</option>
+                                <option value="Engineering">Engineering</option>
+                                <option value="Security">Security</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div id="other-department-container" class="hidden md:col-span-2">
+                            <label for="otherDepartment" class="block text-sm font-medium text-gray-700">โปรดระบุแผนก</label>
+                            <input type="text" id="otherDepartment" name="otherDepartment" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                        <div class="md:col-span-2">
+                            <label for="trainingDate" class="block text-sm font-medium text-gray-700">วันที่เข้าอบรม</label>
+                            <input type="date" id="trainingDate" name="trainingDate" required class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                    </div>
+                    <div class="mt-8 text-center">
+                        <button type="submit" class="w-full md:w-auto inline-flex justify-center py-3 px-12 border border-transparent shadow-sm text-lg font-medium rounded-full text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
+                            ถัดไป
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Page 2: Course Selection & Video Player -->
+        <div id="page-course" class="hidden">
+            <div class="content-card p-8 rounded-xl shadow-2xl">
+                <h2 class="text-2xl font-bold mb-6 text-center">เลือกหลักสูตรและรับชมวิดีโอ</h2>
+                <div id="course-selection">
+                    <p class="text-center mb-4">กรุณาเลือกหลักสูตรที่ต้องการอบรม</p>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50/50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">ชื่อหลักสูตร</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">ระยะเวลา</th>
+                                    <th class="px-6 py-3 text-center text-xs font-medium text-gray-600 uppercase tracking-wider">เลือก</th>
+                                </tr>
+                            </thead>
+                            <tbody id="course-table-body" class="bg-white/50 divide-y divide-gray-200">
+                                <!-- Course rows will be injected by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div id="video-player-section" class="hidden mt-8">
+                    <h3 id="video-title" class="text-xl font-bold mb-4 text-center"></h3>
+                    <div class="video-container rounded-lg shadow-inner">
+                        <div id="player"></div>
+                    </div>
+                    <p class="text-center text-sm text-red-600 font-semibold bg-white/50 rounded-md p-2 mt-4">**ไม่สามารถเลื่อนหรือข้ามวิดีโอได้ กรุณารับชมจนจบ**</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pre-Video Warning Modal -->
+        <div id="pre-video-warning-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center modal">
+            <div class="content-card p-8 rounded-xl shadow-2xl max-w-lg w-full mx-4 text-center">
+                 <h3 class="text-2xl font-bold mb-4 text-yellow-600">ข้อควรทราบ!</h3>
+                 <p class="text-gray-700">จะมีคำถามปรากฏขึ้นระหว่างการรับชมวิดีโอ หากท่านไม่ตอบคำถามภายใน <span class="font-bold">50 วินาที</span> วิดีโอจะถูกรีสตาร์ทใหม่ตั้งแต่ต้น</p>
+                 <p class="text-gray-700 mt-2">และหากรับชมวิดีโอเสร็จเรียบร้อยแล้ว จะมีแบบทดสอบอีก 20 ข้อ และต้องผ่าน 80% ของข้อสอบทั้งหมด</p>
+                 <button id="start-video-btn" class="mt-6 w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-lg font-medium text-white bg-blue-600 hover:bg-blue-700">รับทราบและเริ่มรับชม</button>
+            </div>
+        </div>
+
+        <!-- In-Video Quiz Modal -->
+        <div id="in-video-quiz-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center modal">
+            <div class="content-card p-8 rounded-xl shadow-2xl max-w-lg w-full mx-4">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-bold">คำถามระหว่างรับชม</h3>
+                    <div id="quiz-timer" class="text-lg font-bold text-red-500 bg-red-100 rounded-full px-3 py-1">50</div>
+                </div>
+                <div id="in-video-quiz-content"></div>
+                <button id="submit-in-video-answer" class="mt-6 w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700">ส่งคำตอบ</button>
+            </div>
+        </div>
+        
+        <!-- Time's Up Modal -->
+        <div id="times-up-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center modal">
+            <div class="content-card p-8 rounded-xl shadow-2xl max-w-lg w-full mx-4 text-center">
+                 <h3 class="text-2xl font-bold mb-4 text-red-600">หมดเวลา!</h3>
+                 <p class="text-gray-700">คุณตอบคำถามไม่ทันเวลาที่กำหนด วิดีโอจะเริ่มต้นใหม่</p>
+                 <button id="restart-video-btn" class="mt-6 w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-lg font-medium text-white bg-red-600 hover:bg-red-700">รับทราบ</button>
+            </div>
+        </div>
+        
+        <!-- Page 3: Post-Training Quiz -->
+        <div id="page-post-quiz" class="hidden">
+            <div class="content-card p-8 rounded-xl shadow-2xl">
+                <h2 class="text-2xl font-bold mb-6 text-center">แบบทดสอบหลังการอบรม</h2>
+                <form id="post-quiz-form">
+                    <div id="post-quiz-questions" class="space-y-8"></div>
+                    <div class="mt-8 text-center">
+                        <button type="submit" class="w-full md:w-auto inline-flex justify-center py-3 px-12 border border-transparent shadow-sm text-lg font-medium rounded-full text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors">
+                            ส่งแบบทดสอบ
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Page 4: Results -->
+        <div id="page-results" class="hidden">
+            <div class="content-card p-8 rounded-xl shadow-2xl text-center">
+                <h2 class="text-2xl font-bold mb-4">ผลการอบรม</h2>
+                <!-- Pass Section -->
+                <div id="result-pass" class="hidden">
+                    <svg class="mx-auto h-16 w-16 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <h3 class="text-3xl font-bold text-green-600 mt-4">ยินดีด้วย! คุณผ่านการอบรม</h3>
+                    <div class="text-left mt-6 bg-gray-50 p-4 rounded-lg border">
+                        <p id="result-fullname" class="text-lg"></p>
+                        <p id="result-position" class="text-md text-gray-600"></p>
+                        <p id="result-department" class="text-md text-gray-600"></p>
+                        <p class="text-xl mt-2">คะแนนของคุณคือ: <span id="final-score-pass" class="font-bold">0</span> / 20</p>
+                    </div>
+                    <div class="mt-6 p-4 bg-green-100 border-l-4 border-green-500 text-green-800 rounded-md text-left">
+                        <p class="font-bold">ขั้นตอนต่อไป:</p>
+                        <p>กรุณาถ่ายภาพหน้าจอนี้ และส่งไปที่ Line Official HR เพื่อยืนยันการผ่านอบรม</p>
+                        <p class="font-bold mt-2">ID Line: @niu2574a</p>
+                    </div>
+                </div>
+                <!-- Fail Section -->
+                <div id="result-fail" class="hidden">
+                     <svg class="mx-auto h-16 w-16 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <h3 class="text-3xl font-bold text-red-600 mt-4">ไม่ผ่านการอบรม</h3>
+                     <p class="text-xl mt-6">คะแนนของคุณคือ: <span id="final-score-fail" class="font-bold">0</span> / 20</p>
+                    <p class="text-gray-600 mt-2">กรุณาติดต่อผู้ดูแลเพื่อทำการอบรมอีกครั้ง</p>
+                </div>
+                 <p class="text-gray-500 mt-4 text-sm">ระบบได้บันทึกผลของท่านเรียบร้อยแล้ว</p>
+                <!-- Back to Home Button -->
+                <div class="mt-8">
+                     <button onclick="backToHome()" class="w-full md:w-auto inline-flex justify-center py-2 px-8 border border-gray-300 shadow-sm text-md font-medium rounded-full text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors">
+                        กลับไปยังหน้าหลัก
+                     </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading Spinner -->
+        <div id="loading-spinner" class="hidden fixed inset-0 z-50 flex items-center justify-center modal">
+            <div class="animate-spin rounded-full h-32 w-32 border-t-4 border-b-4 border-blue-500"></div>
+        </div>
+
+    </div>
+
+    <script>
+        // --- CONFIGURATION ---
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz0Mr5iGK3wTqFgFC3On-Le3yKu1Q0A_wl_Kbt3UHk6BfeEzYaPHojR114m6DbGquo4/exec"; // <-- ❗ PASTE YOUR GOOGLE APPS SCRIPT URL HERE
+        const PASS_PERCENTAGE = 0.80; // 80% passing criteria
+
+        // --- DATA & STATE ---
+        let userData = {};
+        let courses = []; // Will be fetched from Google Script
+        let player;
+        let selectedCourse;
+        let inVideoQuizTriggered = [];
+        let postQuizScore = 0;
+        let antiSeekInterval;
+        let quizTimerInterval;
+        let lastTime = -1; // Global variable for tracking last known time
+
+        // --- DOM ELEMENTS ---
+        const pages = { register: document.getElementById('page-register'), course: document.getElementById('page-course'), postQuiz: document.getElementById('page-post-quiz'), results: document.getElementById('page-results') };
+        const registerForm = document.getElementById('register-form');
+        const postQuizForm = document.getElementById('post-quiz-form');
+        const loadingSpinner = document.getElementById('loading-spinner');
+        const courseTableBody = document.getElementById('course-table-body');
+        const videoPlayerSection = document.getElementById('video-player-section');
+        const videoTitle = document.getElementById('video-title');
+        const preVideoWarningModal = document.getElementById('pre-video-warning-modal');
+        const startVideoBtn = document.getElementById('start-video-btn');
+        const inVideoQuizModal = document.getElementById('in-video-quiz-modal');
+        const inVideoQuizContent = document.getElementById('in-video-quiz-content');
+        const submitInVideoAnswerBtn = document.getElementById('submit-in-video-answer');
+        const quizTimerDisplay = document.getElementById('quiz-timer');
+        const timesUpModal = document.getElementById('times-up-modal');
+        const restartVideoBtn = document.getElementById('restart-video-btn');
+
+        // --- FUNCTIONS ---
+        function checkScriptURL() {
+            if (SCRIPT_URL.includes("PASTE YOUR") || !SCRIPT_URL) {
+                alert("ข้อผิดพลาด: กรุณากำหนดค่า SCRIPT_URL ในโค้ด HTML ก่อนใช้งาน\nโปรดคัดลอก URL ของ Web App จาก Google Apps Script มาวาง");
+                return false;
+            } return true;
+        }
+
+        function showPage(pageId) {
+            Object.values(pages).forEach(page => page.classList.add('hidden'));
+            if (pages[pageId]) {
+                pages[pageId].classList.remove('hidden');
+            }
+        }
+
+        function toggleLoading(show) {
+            loadingSpinner.classList.toggle('hidden', !show);
+        }
+        
+        function loadYouTubeAPI() {
+            const tag = document.createElement('script');
+            tag.src = "https://www.youtube.com/iframe_api";
+            const firstScriptTag = document.getElementsByTagName('script')[0];
+            firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+        }
+
+        function fetchCourseData() {
+            if (!checkScriptURL()) return;
+            toggleLoading(true);
+            
+            const script = document.createElement('script');
+            script.src = `${SCRIPT_URL}?action=getCourses&callback=handleCourseData`;
+            
+            script.onerror = () => {
+                toggleLoading(false);
+                alert('เกิดข้อผิดพลาดในการโหลดข้อมูลหลักสูตร (JSONP Error). โปรดตรวจสอบการตั้งค่า Deploy ของ Google Apps Script');
+                document.head.removeChild(script);
+            };
+            
+            document.head.appendChild(script);
+        }
+
+        function handleCourseData(data) {
+            toggleLoading(false);
+            if (data && data.courses) {
+                courses = data.courses;
+                populateCourses();
+                
+                const savedResults = localStorage.getItem('trainingResults');
+                if (savedResults) {
+                    const resultsData = JSON.parse(savedResults);
+                    userData = resultsData.userData;
+                    selectedCourse = courses.find(c => c.name === userData.courseName);
+                    if (selectedCourse) {
+                       displayResults(resultsData);
+                       showPage('results');
+                    } else {
+                       localStorage.removeItem('trainingResults');
+                       showPage('register');
+                    }
+                } else {
+                    showPage('register');
+                }
+            } else {
+                 alert('ได้รับข้อมูลหลักสูตรในรูปแบบที่ไม่ถูกต้อง');
+                 showPage('register');
+            }
+            
+            const scripts = document.getElementsByTagName('script');
+            for (let i = scripts.length; i--;) {
+                if (scripts[i].src.startsWith(SCRIPT_URL)) {
+                    scripts[i].parentNode.removeChild(scripts[i]);
+                }
+            }
+        }
+
+        function populateCourses() {
+            courseTableBody.innerHTML = '';
+            if (!courses || courses.length === 0) {
+                 courseTableBody.innerHTML = `<tr><td colspan="3" class="text-center p-4">ไม่พบข้อมูลหลักสูตร</td></tr>`;
+                 return;
+            }
+            courses.forEach(course => {
+                const durationText = course.duration ? `${Math.floor(course.duration / 60)} นาที` : 'N/A';
+                const row = `<tr class="hover:bg-gray-100/50"><td class="px-6 py-4 whitespace-nowrap">${course.name}</td><td class="px-6 py-4 whitespace-nowrap">${durationText}</td><td class="px-6 py-4 whitespace-nowrap text-center"><button onclick="selectCourse('${course.id}')" class="text-white bg-blue-600 hover:bg-blue-700 font-medium rounded-lg text-sm px-5 py-2.5">เลือก</button></td></tr>`;
+                courseTableBody.innerHTML += row;
+            });
+        }
+
+        function selectCourse(courseId) {
+            selectedCourse = courses.find(c => c.id === courseId);
+            if (!selectedCourse) return;
+            
+            inVideoQuizTriggered = selectedCourse.inVideoQuiz ? selectedCourse.inVideoQuiz.map(() => false) : [];
+            userData.courseName = selectedCourse.name;
+            preVideoWarningModal.classList.remove('hidden');
+        }
+
+        function startVideo() {
+            preVideoWarningModal.classList.add('hidden');
+            document.getElementById('course-selection').classList.add('hidden');
+            videoPlayerSection.classList.remove('hidden');
+            videoTitle.textContent = selectedCourse.name;
+            
+            if (player) {
+                player.loadVideoById(selectedCourse.videoId);
+            } else {
+                if (typeof YT === 'undefined' || typeof YT.Player === 'undefined') {
+                    loadYouTubeAPI();
+                    window.onYouTubeIframeAPIReady = createPlayer;
+                } else {
+                    createPlayer();
+                }
+            }
+        }
+
+        function createPlayer() {
+             player = new YT.Player('player', {
+                height: '390', width: '640', videoId: selectedCourse.videoId,
+                playerVars: { 'playsinline': 1, 'controls': 0, 'disablekb': 1, 'modestbranding': 1, 'rel': 0 },
+                events: { 'onReady': onPlayerReady, 'onStateChange': onPlayerStateChange }
+            });
+        }
+        
+        function onPlayerReady(event) {
+            event.target.playVideo();
+            lastTime = -1;
+            clearInterval(antiSeekInterval);
+            antiSeekInterval = setInterval(() => {
+                if (player && typeof player.getCurrentTime === 'function') {
+                    const currentTime = player.getCurrentTime();
+                    
+                    if (lastTime !== -1 && currentTime > lastTime + 2.5) {
+                        player.seekTo(lastTime, true);
+                    } else {
+                        lastTime = currentTime;
+                    }
+                    
+                    if (selectedCourse && selectedCourse.inVideoQuiz) {
+                        selectedCourse.inVideoQuiz.forEach((quiz, index) => {
+                            if (currentTime >= quiz.time && !inVideoQuizTriggered[index]) {
+                                inVideoQuizTriggered[index] = true;
+                                player.pauseVideo();
+                                displayInVideoQuiz(quiz);
+                            }
+                        });
+                    }
+                }
+            }, 1000);
+        }
+
+        function onPlayerStateChange(event) {
+            if (event.data === YT.PlayerState.PLAYING) {
+                const currentTime = player.getCurrentTime();
+                if (lastTime !== -1 && currentTime > lastTime + 2.5) {
+                    player.seekTo(lastTime, true);
+                }
+            }
+            
+            if (event.data === YT.PlayerState.ENDED) {
+                clearInterval(antiSeekInterval);
+                if (selectedCourse.postQuiz && selectedCourse.postQuiz.length > 0) {
+                    showPage('postQuiz');
+                    populatePostQuiz();
+                } else {
+                    handleNoPostQuiz();
+                }
+            }
+        }
+
+        function displayInVideoQuiz(quiz) {
+            let optionsHTML = '';
+            quiz.options.forEach((option) => {
+                optionsHTML += `<label class="block mt-2"><input type="radio" name="in-video-option" value="${option}" class="mr-2"> ${option}</label>`;
+            });
+            inVideoQuizContent.innerHTML = `<p class="font-semibold">${quiz.question}</p>${optionsHTML}`;
+            inVideoQuizModal.classList.remove('hidden');
+            let timeLeft = 50;
+            quizTimerDisplay.textContent = timeLeft;
+            quizTimerInterval = setInterval(() => {
+                timeLeft--;
+                quizTimerDisplay.textContent = timeLeft;
+                if (timeLeft <= 0) { handleTimesUp(); }
+            }, 1000);
+        }
+
+        function handleTimesUp() {
+            clearInterval(quizTimerInterval);
+            inVideoQuizModal.classList.add('hidden');
+            timesUpModal.classList.remove('hidden');
+        }
+
+        function restartVideo() {
+            timesUpModal.classList.add('hidden');
+            inVideoQuizTriggered = inVideoQuizTriggered.map(() => false);
+            lastTime = 0;
+            player.seekTo(0, true);
+            player.playVideo();
+        }
+        
+        function displayResults(resultsData) {
+            const { userData, score, status } = resultsData;
+            const totalQuestions = selectedCourse ? (selectedCourse.postQuiz.length || 0) : 0;
+            const resultPassDiv = document.getElementById('result-pass');
+            const resultFailDiv = document.getElementById('result-fail');
+
+            if (status === 'ผ่าน (Passed)') {
+                document.getElementById('result-fullname').textContent = `ชื่อ-นามสกุล: ${userData.firstName} ${userData.lastName}`;
+                document.getElementById('result-position').textContent = `ตำแหน่ง: ${userData.position}`;
+                document.getElementById('result-department').textContent = `แผนก: ${userData.department}`;
+                document.getElementById('final-score-pass').textContent = `${score} / ${totalQuestions}`;
+                resultPassDiv.classList.remove('hidden');
+                resultFailDiv.classList.add('hidden');
+            } else {
+                document.getElementById('final-score-fail').textContent = `${score} / ${totalQuestions}`;
+                resultFailDiv.classList.remove('hidden');
+                resultPassDiv.classList.add('hidden');
+            }
+        }
+
+        function populatePostQuiz() {
+            const questionsContainer = document.getElementById('post-quiz-questions');
+            let questionsHTML = '';
+            selectedCourse.postQuiz.forEach((q, index) => {
+                let optionsHTML = '';
+                const shuffledOptions = [...q.options].sort(() => Math.random() - 0.5);
+                shuffledOptions.forEach(option => {
+                    optionsHTML += `<label class="block mt-2 hover:bg-blue-100/50 p-2 rounded-md cursor-pointer"><input type="radio" name="question-${index}" value="${option}" required class="mr-2"> ${option}</label>`;
+                });
+                questionsHTML += `<div class="p-4 rounded-lg bg-black/5"><p class="font-semibold">${q.question}</p><div class="mt-2 pl-4">${optionsHTML}</div></div>`;
+            });
+            questionsContainer.innerHTML = questionsHTML;
+        }
+
+        function backToHome() {
+            localStorage.removeItem('trainingResults');
+            location.reload(); 
+        }
+
+        async function submitQuizAndSave() {
+             if (!checkScriptURL()) return;
+            toggleLoading(true);
+            
+            postQuizScore = 0;
+            const formData = new FormData(postQuizForm);
+            const userAnswers = [];
+            selectedCourse.postQuiz.forEach((q, index) => {
+                const userAnswer = formData.get(`question-${index}`);
+                const isCorrect = userAnswer === q.answer;
+                if (isCorrect) { postQuizScore++; }
+                userAnswers.push({ question: q.question, userAnswer: userAnswer, correctAnswer: q.answer, isCorrect: isCorrect });
+            });
+
+            const passingScore = Math.ceil(selectedCourse.postQuiz.length * PASS_PERCENTAGE);
+            const passStatus = postQuizScore >= passingScore ? 'ผ่าน (Passed)' : 'ไม่ผ่าน (Failed)';
+            
+            await finalizeTraining(postQuizScore, passStatus, userAnswers);
+        }
+
+        async function handleNoPostQuiz() {
+            await finalizeTraining(0, 'ผ่าน (Passed)', []);
+        }
+
+        async function finalizeTraining(score, status, answers) {
+            toggleLoading(true);
+            const resultsData = { userData, score: score, status: status, quizCompleted: true };
+            localStorage.setItem('trainingResults', JSON.stringify(resultsData));
+            
+            displayResults(resultsData);
+            showPage('results'); 
+            
+            const finalData = { 
+                action: 'submitTraining', 
+                userData: userData, 
+                courseName: selectedCourse.name, 
+                score: score, 
+                status: status, 
+                quizAnswers: JSON.stringify(answers) 
+            };
+
+            try {
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    cache: 'no-cache',
+                    headers: {
+                        'Content-Type': 'text/plain;charset=utf-8',
+                    },
+                    redirect: 'follow',
+                    body: JSON.stringify(finalData)
+                });
+                console.log("Submit request sent to Google Sheet.");
+            } catch (error) {
+                console.error('Error submitting results:', error);
+                alert(`เกิดข้อผิดพลาดในการบันทึกผลลัพธ์ลง Google Sheet แต่ผลลัพธ์ของท่านได้ถูกบันทึกไว้ในเครื่องแล้ว\n\nรายละเอียดข้อผิดพลาด: ${error.message}`);
+            } finally {
+                toggleLoading(false);
+            }
+        }
+
+        // --- EVENT LISTENERS ---
+        document.addEventListener('DOMContentLoaded', () => {
+            document.body.addEventListener('click', function (e) {
+                if (e.target.tagName === 'HTML' || e.target.tagName === 'BODY' && e.clientX >= document.documentElement.clientWidth) return;
+                const ripple = document.createElement('span');
+                ripple.className = 'ripple';
+                const size = 50;
+                ripple.style.left = `${e.clientX - size / 2}px`; 
+                ripple.style.top = `${e.clientY - size / 2}px`;
+                this.appendChild(ripple);
+                setTimeout(() => { ripple.remove(); }, 600);
+            });
+
+            document.getElementById('department').addEventListener('change', function() {
+                const otherContainer = document.getElementById('other-department-container');
+                const otherInput = document.getElementById('otherDepartment');
+                if (this.value === 'Other') {
+                    otherContainer.classList.remove('hidden');
+                    otherInput.required = true;
+                } else {
+                    otherContainer.classList.add('hidden');
+                    otherInput.required = false;
+                    otherInput.value = '';
+                }
+            });
+            
+            fetchCourseData();
+
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('trainingDate').setAttribute('min', today);
+        });
+
+        registerForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            if (!checkScriptURL()) return;
+            const formData = new FormData(registerForm);
+            const departmentValue = formData.get('department');
+            const department = departmentValue === 'Other' ? formData.get('otherDepartment') : departmentValue;
+
+            userData = {
+                firstName: formData.get('firstName'),
+                lastName: formData.get('lastName'),
+                employeeId: formData.get('employeeId'),
+                position: formData.get('position'), // Added position
+                department: department,
+                trainingDate: formData.get('trainingDate'),
+            };
+            localStorage.removeItem('trainingResults');
+            showPage('course');
+        });
+        
+        startVideoBtn.addEventListener('click', startVideo);
+        restartVideoBtn.addEventListener('click', restartVideo);
+
+        submitInVideoAnswerBtn.addEventListener('click', () => {
+            const selectedOption = document.querySelector('input[name="in-video-option"]:checked');
+            if (!selectedOption) { 
+                alert('กรุณาเลือกคำตอบ'); 
+                return;
+            }
+            clearInterval(quizTimerInterval);
+            inVideoQuizModal.classList.add('hidden');
+            player.playVideo();
+        });
+
+        postQuizForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            submitQuizAndSave();
+        });
+    </script>
+</body>
+</html>
